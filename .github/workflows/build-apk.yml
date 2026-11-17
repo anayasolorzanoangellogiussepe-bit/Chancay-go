@@ -13,10 +13,11 @@ jobs:
       EXPO_PUBLIC_SHARE_BASE_URL: ${{ secrets.SHARE_BASE_URL }}
       GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
       GRADLE_OPTS: -Xmx4g -Dorg.gradle.daemon=false
+      NODE_OPTIONS: --max-old-space-size=4096
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: { node-version: 20, cache: npm }
+        with: { node-version: 22, cache: npm }
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: 17 }
       - name: Instalar dependencias
@@ -27,6 +28,10 @@ jobs:
           jq --arg k "$KEY" '.expo.android.config.googleMaps.apiKey=$k | .expo.ios.config.googleMapsApiKey=$k' app.json > app.tmp && mv app.tmp app.json
       - name: Generar proyecto Android
         run: npx expo prebuild --platform android --no-install
+      - name: Probar empaquetado (si falla, el error real queda en las ultimas lineas)
+        run: |
+          set -o pipefail
+          npx expo export --platform android --output-dir dist-check 2>&1 | grep -v '▓' | tail -80
       - name: Compilar APK
         run: cd android && ./gradlew assembleRelease --no-daemon
       - uses: actions/upload-artifact@v4
