@@ -1,0 +1,80 @@
+{
+  "expo": {
+    "name": "ChancayGo",
+    "slug": "chancay-go",
+    "scheme": "chancaygo",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "plugins": [
+      "expo-router",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "ChancayGo usa tu ubicación para pedir y realizar viajes seguros.",
+          "locationAlwaysPermission": "ChancayGo comparte tu ubicación mientras estás En línea para que los pasajeros te vean llegar.",
+          "locationWhenInUsePermission": "ChancayGo usa tu ubicación para pedir y realizar viajes seguros.",
+          "isAndroidBackgroundLocationEnabled": true,
+          "isAndroidForegroundServiceEnabled": true,
+          "isIosBackgroundLocationEnabled": true
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Para subir los documentos del chofer.",
+          "cameraPermission": "Para tomar fotos de tus documentos."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/adaptive-icon.png",
+          "color": "#0B6E4F"
+        }
+      ]
+    ],
+    "android": {
+      "package": "pe.chancaygo.app",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "CAMERA",
+        "POST_NOTIFICATIONS",
+        "ACCESS_BACKGROUND_LOCATION",
+        "FOREGROUND_SERVICE",
+        "FOREGROUND_SERVICE_LOCATION"
+      ],
+      "config": {
+        "googleMaps": {
+          "apiKey": "REEMPLAZAR_CON_TU_GOOGLE_MAPS_API_KEY"
+        }
+      },
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0B6E4F"
+      }
+    },
+    "ios": {
+      "bundleIdentifier": "pe.chancaygo.app",
+      "config": {
+        "googleMapsApiKey": "REEMPLAZAR_CON_TU_GOOGLE_MAPS_API_KEY"
+      },
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "UIBackgroundModes": [
+          "location"
+        ]
+      }
+    },
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0B6E4F"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}

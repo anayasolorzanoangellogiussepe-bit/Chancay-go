@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ChancayGo · Seguimiento de viaje</title>
+<style>
+  body{font-family:system-ui,sans-serif;margin:0;background:#f5f7f6;color:#1b1b1b}
+  header{background:#0b6e4f;color:#fff;padding:16px;font-weight:800;font-size:20px}
+  main{padding:16px;max-width:480px;margin:auto}
+  .card{background:#fff;border-radius:14px;padding:16px;box-shadow:0 1px 6px #0002}
+  .st{font-size:18px;font-weight:800;margin-bottom:8px}
+  a.btn{display:block;text-align:center;background:#0b6e4f;color:#fff;padding:12px;border-radius:10px;text-decoration:none;font-weight:700;margin-top:12px}
+</style>
+</head>
+<body>
+<header>ChancayGo · Seguimiento en vivo</header>
+<main><div class="card" id="c">Cargando…</div></main>
+<script type="module">
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+  // Reemplaza con los datos de tu proyecto (la clave anon es pública por diseño)
+  const SUPABASE_URL = 'https://TU-PROYECTO.supabase.co';
+  const SUPABASE_ANON_KEY = 'TU_ANON_KEY';
+  const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const token = new URLSearchParams(location.search).get('t');
+  const names = {accepted:'Chofer en camino',arrived:'El chofer llegó',in_progress:'Viaje en curso',completed:'Viaje finalizado'};
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  async function tick(){
+    const el = document.getElementById('c');
+    if(!token){ el.textContent='Enlace inválido.'; return; }
+    const { data, error } = await sb.rpc('get_shared_trip', { p_token: token });
+    const t = data && data[0];
+    if(error || !t){ el.textContent='Viaje no disponible o aún sin chofer asignado.'; return; }
+    const map = t.lat != null ? `<a class="btn" href="https://www.google.com/maps?q=${t.lat},${t.lng}" target="_blank" rel="noopener">Ver chofer en el mapa</a>` : '';
+    el.innerHTML = `<div class="st">${esc(names[t.status])}</div>
+      <p><b>Desde:</b> ${esc(t.origin_text)}<br><b>Hasta:</b> ${esc(t.dest_text)}</p>
+      <p><b>Chofer:</b> ${esc(t.driver_name)}<br><b>Vehículo:</b> ${esc(t.vehicle)}<br><b>Placa:</b> ${esc(t.plate)}</p>${map}
+      <p style="color:#667;font-size:12px">Actualizado: ${t.updated ? new Date(t.updated).toLocaleTimeString('es-PE') : '—'}</p>`;
+    if(t.status !== 'completed') setTimeout(tick, 8000);
+  }
+  tick();
+</script>
+</body>
+</html>
