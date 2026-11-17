@@ -16,11 +16,28 @@ export function Button({ title, onPress, loading, variant = 'primary', disabled 
   );
 }
 
-export function Field({ label, ...props }: { label: string } & TextInputProps) {
+export function Field({ label, secureTextEntry, ...props }: { label: string } & TextInputProps) {
+  const [hidden, setHidden] = React.useState(true);
+  const isPassword = !!secureTextEntry;
   return (
     <View style={{ marginBottom: 12 }}>
       <Text style={s.label}>{label}</Text>
-      <TextInput placeholderTextColor="#99a" style={s.input} {...props} />
+      <View style={{ justifyContent: 'center' }}>
+        <TextInput
+          placeholderTextColor="#99a"
+          {...props}
+          style={[s.input, isPassword && { paddingRight: 52 }]}
+          secureTextEntry={isPassword ? hidden : false}
+          autoCapitalize={isPassword ? 'none' : props.autoCapitalize}
+          autoCorrect={isPassword ? false : props.autoCorrect}
+        />
+        {isPassword && (
+          <Pressable onPress={() => setHidden((h) => !h)} hitSlop={12} accessibilityLabel={hidden ? 'Mostrar contraseña' : 'Ocultar contraseña'}
+            style={{ position: 'absolute', right: 12, padding: 4 }}>
+            <Text style={{ fontSize: 22 }}>{hidden ? '👁️' : '🙈'}</Text>
+          </Pressable>
+        )}
+      </View>
     </View>
   );
 }

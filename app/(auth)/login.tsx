@@ -10,10 +10,19 @@ export default function Login() {
   const [busy, setBusy] = useState(false);
 
   const submit = async () => {
+    if (!process.env.EXPO_PUBLIC_SUPABASE_URL) {
+      return Alert.alert('App sin servidor', 'Esta versión se compiló sin la dirección del servidor (SUPABASE_URL).');
+    }
     setBusy(true);
     const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
     setBusy(false);
-    if (error) Alert.alert('No se pudo ingresar', error.message);
+    if (error) {
+      const m = error.message;
+      const txt = m.includes('Invalid login') ? 'Correo o contraseña incorrectos.'
+        : m.includes('Network request failed') ? 'No hay conexión con el servidor. Revisa tu internet.'
+        : m;
+      Alert.alert('No se pudo ingresar', `${txt}\n\n(Detalle: ${m})`);
+    }
   };
 
   return (
